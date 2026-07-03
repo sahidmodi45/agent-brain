@@ -1,0 +1,27 @@
+#!/bin/sh
+# pre-commit hook for agent-brain
+#
+# Keeps status.json in sync with the phase checked in context/project.md
+# as of every commit. See scripts/git-hooks/README.md for one-time setup.
+#
+# Behavior:
+#   - Runs the Node.js generator (scripts/update-status.js).
+#   - If it succeeds, stages the resulting status.json so it's included
+#     in the commit that's about to happen.
+#   - If it fails (e.g. zero or 2+ phase boxes checked in project.md),
+#     the commit is aborted and the generator's error message is shown.
+
+# Find the repo root so this works regardless of cwd when git invokes it.
+repo_root=$(git rev-parse --show-toplevel) || exit 1
+
+node "$repo_root/scripts/update-status.js"
+status=$?
+
+if [ $status -ne 0 ]; then
+  echo "pre-commit hook: status.json generator failed. Commit aborted." >&2
+  exit $status
+fi
+
+git add "$repo_root/status.json"
+
+exit 0
