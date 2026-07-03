@@ -29,3 +29,15 @@ The context files are only useful if they're true. When you finish a piece of wo
 ## The handoff chain
 
 Planner → Manager → Coder → Reviewer, with the Manager coordinating throughout. Each role hands off through the context files, not through memory. If it isn't written down, it didn't happen.
+
+## How the roles are wired up
+
+Each role exists in two places. The `agents/*.md` files are the plain-English description for humans reading the repo. The real, executable versions live under `.claude/`:
+
+- **Subagents** — `.claude/agents/{planner,manager,coder,reviewer}.md`. These are the actual Claude Code subagents, each with its own model, tool access, and a description that tells Claude when to delegate to it. The tool limits are real guardrails: the Manager can only edit, the Reviewer is read-only (Read/Grep/Glob — it can never modify code), the Coder has Bash, the Planner writes plans. When you're running as a role, you *are* the matching subagent.
+- **Skills** — `.claude/skills/*/SKILL.md`, each triggered automatically when its situation comes up:
+  - `task-breakdown` (Manager) — what makes a task well-formed before it goes to the Coder.
+  - `review-checklist` (Reviewer) — the pass to run before giving any verdict.
+  - `commit-standards` (Coder) — what a good commit message looks like in this repo.
+
+You don't need to load these by hand — the subagent is selected when the session is delegated, and the skills fire on their triggers. This section is just so you know they exist and where to look.
