@@ -34,3 +34,54 @@ The Manager coordinates the whole loop. Handoffs happen through the context file
 ## Starting a session
 
 Tell the agent its role. It reads `CLAUDE.md`, then `agents/<role>.md`, then the four `context/` files, and only then starts working.
+
+## Walkthrough: one task, start to finish
+
+Say the human wants: *"Add a `/health` endpoint that returns 200 OK."* Here's how that moves through the brain. Each step, watch which file changes.
+
+**1. Planner session.** Reads its role file and the context. The project is empty, so it writes `context/plan.md`:
+
+```
+## Goal
+Expose a /health endpoint so uptime checks have something to hit.
+
+## Approach
+Add a GET /health route that returns 200 with a small JSON body.
+No auth, no DB call — it must stay cheap enough to poll every few seconds.
+
+## Constraints
+- Existing Express app; follow the current route style.
+- Must not touch the DB (a health check that hits the DB isn't a health check).
+
+## Open questions
+- Should the body include a version string? (minor — Manager can decide)
+```
+
+It sets `context/project.md` phase to **Planning → Delegated** and hands off.
+
+**2. Manager session.** Reads the plan, breaks it into a task on `context/tasks.md`:
+
+```
+## To do
+- [ ] Add GET /health route returning 200 + {"status":"ok"} — added by Manager 2026-07-03
+```
+
+It answers the minor open question itself (no version string for now) and logs that call in `context/decisions.md` as a new entry. Phase → **In progress**. Hands the task to the Coder.
+
+**3. Coder session.** Moves the task to **In progress**, writes the route, then to **In review**. Drops a line in `logs/2026-07-03-coder.md`: *"Added /health, returns `{status:'ok'}`, no DB touch. Tested with curl → 200."* No new decisions needed.
+
+**4. Reviewer session.** Checks the code against the plan and the decision log. The route matches the "no DB" constraint and the "no version string" decision — it passes. Notes the verdict in `logs/2026-07-03-reviewer.md` and hands back to the Manager, who marks the task **Done** and sets the project phase to **Shipped**.
+
+### Where a human would step in
+
+Suppose the Coder realized the health check needed a new production environment variable set on the live server. That's outside the plan and touches production — so instead of doing it, the Coder adds to the top of `context/tasks.md`:
+
+```
+## NEEDS HUMAN APPROVAL
+- **Set HEALTHCHECK_TOKEN on the prod server** — flagged by Coder on 2026-07-03.
+  Why it needs a human: changes production config.
+  Waiting on: go-ahead + the token value.
+  Status: PAUSED.
+```
+
+Then it stops. Nothing else on that thread moves until the human replies. That pause is the system working as designed — not a stall.
