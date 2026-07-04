@@ -11,6 +11,7 @@ Before you take any action, read these files, every time:
 3. `context/plan.md` — the current plan.
 4. `context/tasks.md` — the task board and anything waiting on a human.
 5. `context/decisions.md` — decisions already made. Don't relitigate them.
+6. `.claude/skills/lessons-learned/SKILL.md` — hard-won insights from past work, across every project this system has run. Read it before you start so you don't repeat a mistake we already paid for; append to it when you learn one.
 
 Do not skip this. The whole point of the repo is that no agent works from stale assumptions. If you act before reading, you will step on another agent's work.
 
