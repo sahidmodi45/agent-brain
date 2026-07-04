@@ -31,6 +31,23 @@ The Manager coordinates the whole loop. Handoffs happen through the context file
 - **`context/decisions.md` and `logs/` are append-only.** You add to them; you never rewrite them. A wrong decision gets superseded by a new entry, not erased.
 - **Anything needing a human pauses.** If work hits something irreversible, costly, or outside the plan, the agent flags it in the `NEEDS HUMAN APPROVAL` section of `context/tasks.md` and stops until the human responds.
 
+## Automatic syntax gate
+
+Every time an agent writes or edits a file, a `PostToolUse` hook runs
+`scripts/check-file.js` on just that file:
+
+- `.js` / `.cjs` / `.mjs` → `node --check` (does it parse?)
+- `.json` → `JSON.parse` (is it valid JSON?)
+- anything else → skipped.
+
+The repo has no build tooling, so "lint" here means "does it parse" —
+enough to catch a stray brace or a trailing comma before it reaches the
+Reviewer. If the check fails, the hook exits non-zero and hands the error
+back to the agent to fix; on anything it doesn't know how to check, it
+stays silent. It's wired up in `.claude/settings.json` and aimed at the
+Coder (the only role that writes code), but it runs harmlessly after any
+edit since it only acts on `.js`/`.json`.
+
 ## Starting a session
 
 Tell the agent its role. It reads `CLAUDE.md`, then `agents/<role>.md`, then the four `context/` files, and only then starts working.
