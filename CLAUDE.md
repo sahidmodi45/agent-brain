@@ -47,3 +47,17 @@ Each role exists in two places. The `agents/*.md` files are the plain-English de
   - `lessons-learned` (all roles) — the system's compounding memory: read it at the start of every task, append a hard-won insight after. Unlike the context files, it carries across every project, not just this repo.
 
 You don't need to load these by hand — the subagent is selected when the session is delegated, and the skills fire on their triggers. This section is just so you know they exist and where to look.
+
+## Model routing
+
+The Coder defaults to **Sonnet** (set in `.claude/agents/coder.md`). For routine implementation — a well-specified task, a single file, a clear definition of done — Sonnet is the right call: it's fast, cheap, and more than capable.
+
+Switch the Coder to **Opus** when the task is genuinely hard, not just long:
+
+- **Architectural decisions** baked into the task — choosing a data shape, an abstraction, or a pattern the rest of the system will lean on. A wrong call here is expensive to unwind later.
+- **Tricky multi-file coordination** — changes that have to stay consistent across several files, where missing one spot silently breaks things.
+- **Dense or subtle logic** — state machines, concurrency, non-obvious edge cases, anything where "looks right" and "is right" often diverge.
+
+This is a judgment call, not a rule. The Manager (or whoever hands off the task) makes it when framing the work, and the rule of thumb is simple: **if getting it wrong is cheap to fix, use Sonnet; if getting it wrong is expensive, spend the Opus tokens.** When in doubt on something with lasting impact, prefer Opus — the cost of a bad foundation dwarfs the cost of the better model. Note the choice in the task if it's anything other than the Sonnet default, so the next agent knows it was deliberate.
+
+The other roles keep their own models (Planner reasons over the plan; Manager and Reviewer run lighter) — this routing note is specifically about the Coder, where the work varies most in difficulty.
