@@ -38,6 +38,11 @@ Each role exists in two places. The `agents/*.md` files are the plain-English de
 - **Skills** — `.claude/skills/*/SKILL.md`, each triggered automatically when its situation comes up:
   - `task-breakdown` (Manager) — what makes a task well-formed before it goes to the Coder.
   - `review-checklist` (Reviewer) — the pass to run before giving any verdict.
+  - `security-review` (Reviewer) — a focused security pass to run alongside the review checklist.
   - `commit-standards` (Coder) — what a good commit message looks like in this repo.
+  - `debugging` (Coder) — the systematic approach when something breaks.
+  - `fullstack-web-dev` (Coder) — baseline conventions for building websites and APIs.
+  - `testing-standards` (Coder) — what "adequately tested" means before handing off to review.
+  - `lessons-learned` (all roles) — the system's compounding memory: read it at the start of every task, append a hard-won insight after. Unlike the context files, it carries across every project, not just this repo.
 
 You don't need to load these by hand — the subagent is selected when the session is delegated, and the skills fire on their triggers. This section is just so you know they exist and where to look.
