@@ -59,6 +59,11 @@ _Passed QA, waiting on the Reviewer's compliance check against the plan, the def
 
 _Finished and accepted by the Manager._
 
+- [x] **Add GET /random-fact endpoint to quote-demo/server.js** — built by Coder 2026-07-07, QA PASS 2026-07-07, Review PASS 2026-07-07
+  - Added hardcoded `FACTS` array (10 entries) and new `if` branch for `GET /random-fact` handler, reusing existing `sendJSON` helper. Diff is purely additive; no changes to existing routes or structure.
+  - QA: PASS (2026-07-07) — ran at runtime, regression-checked existing routes (`GET /`, `GET /quote`, 404s), pushed unplanned inputs (`POST /random-fact`, non-existent routes), no breaks. Confirmed variety across repeated calls; no new dependencies or artifacts.
+  - Review: PASS (2026-07-07) — meets definition of done, respects all plan constraints (additive-only, reuses helpers as-is, no frontend changes, single-file edit), clean security pass. Noted one in-scope documentation edit (server.js comment header updated to document the new route).
+  - **Intended phase change for context/project.md:** Planning → Shipped (work complete, all gates cleared; human reserves the final ship/commit decision).
 - [x] **Implement status.json generator script** — done 2026-07-03
   - `scripts/update-status.js` (Node.js, built-ins only). Reviewer confirmed correct: robust regex over the six known checkboxes, fails loudly on 0/2+ checked, no deps.
 - [x] **Implement and document git pre-commit hook infrastructure** — done 2026-07-03

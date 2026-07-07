@@ -4,8 +4,9 @@
 // Uses only Node built-ins: http, fs, path.
 //
 // Routes:
-//   GET /       -> serves index.html (text/html)
-//   GET /quote  -> returns a random quote as JSON: { text, author }
+//   GET /             -> serves index.html (text/html)
+//   GET /quote        -> returns a random quote as JSON: { text, author }
+//   GET /random-fact  -> returns a random fact as JSON: { fact }
 //   anything else -> 404, plain text, no crash
 
 const http = require('http');
@@ -25,6 +26,19 @@ const QUOTES = [
   { text: 'The journey of a thousand miles begins with a single step.', author: 'Lao Tzu' },
   { text: 'Whether you think you can or you think you can\'t, you\'re right.', author: 'Henry Ford' },
   { text: 'Simplicity is the ultimate sophistication.', author: 'Leonardo da Vinci' },
+];
+
+const FACTS = [
+  'Honey never spoils if stored properly.',
+  'A group of flamingos is called a "flamboyance."',
+  'Octopuses have three hearts.',
+  'Bananas are berries, but strawberries are not.',
+  'The Eiffel Tower can be over 15 cm taller during summer due to heat expansion.',
+  'A day on Venus is longer than a year on Venus.',
+  'Sea otters hold hands while sleeping so they don\'t drift apart.',
+  'The shortest war in history lasted about 38 minutes.',
+  'There are more possible chess games than atoms in the observable universe.',
+  'Sharks existed before trees appeared on Earth.',
 ];
 
 const INDEX_PATH = path.join(__dirname, 'index.html');
@@ -78,6 +92,12 @@ const server = http.createServer((req, res) => {
   if (req.method === 'GET' && urlPath === '/quote') {
     const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
     sendJSON(res, 200, quote);
+    return;
+  }
+
+  if (req.method === 'GET' && urlPath === '/random-fact') {
+    const fact = FACTS[Math.floor(Math.random() * FACTS.length)];
+    sendJSON(res, 200, { fact });
     return;
   }
 

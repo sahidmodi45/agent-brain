@@ -19,4 +19,4 @@ Move the marker as work progresses. Only one phase is "current" at a time.
 
 ## Notes
 
-<!-- Anything about the project as a whole that doesn't fit the plan or the task board. -->
+The original quote-demo scope (`GET /quote` + `index.html`) shipped 2026-07-07. A small follow-on increment — a `GET /random-fact` endpoint on `quote-demo/server.js`, reusing the `/quote` pattern — was scoped, built, QA-passed, and review-passed, and **shipped 2026-07-07** (backend only; wiring `index.html` to the new endpoint was explicitly out of scope and remains a possible future increment). See `context/plan.md` and the Done task in `context/tasks.md`.
