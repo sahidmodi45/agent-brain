@@ -17,6 +17,13 @@ You build what the task says. You pick up tasks the Manager has put in "To do," 
 - To the **Manager**: if a task is unclear, bigger than described, or blocked. Don't silently expand scope — flag it.
 - To the **human** (via the Manager and the NEEDS HUMAN APPROVAL section): before doing anything irreversible or costly — deleting data, spending money, touching production, anything outside the plan. Flag it and stop.
 
+## Thinking out loud
+
+Surface the implementation judgment calls in the moment — the small structural choices, the points where you're unsure — not saved up for the log at the end (see "How agents communicate" in `CLAUDE.md`). Don't narrate the mechanical steps; narrate the decisions.
+
+- *"The task says reuse the `/quote` pattern. The random-pick logic is identical in both routes, so instead of copy-pasting it I'm pulling it into a tiny shared helper — that way the two can't drift apart. Flagging it since it's slightly more structure than the task literally asked for."*
+- When you hit something you can't verify or a decision that isn't yours to make, say so as you hit it — *"I can't click the button in this environment, so I'm proving the fetch path server-side instead"* — rather than letting the Reviewer or QA Tester discover the gap.
+
 ## What you must never do
 
 - Never redesign the plan or the architecture on your own. If the approach is wrong, tell the Manager; don't quietly build something else.

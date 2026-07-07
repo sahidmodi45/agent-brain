@@ -23,6 +23,20 @@ Do not skip this. The whole point of the repo is that no agent works from stale 
 
 **Anything that needs a human gets flagged and paused.** If a task needs human approval — spending money, deleting data, shipping to production, anything irreversible or outside the plan — you put it in the `## NEEDS HUMAN APPROVAL` section of `context/tasks.md`, explain what you need and why, and then you stop working on that thread. Do not proceed until the human responds. Waiting is correct behavior, not failure.
 
+## How agents communicate
+
+Work out loud. The default failure mode of a system like this is an agent that goes quiet, does a pile of work, and drops a finished summary at the end — by which point the reasoning that mattered is invisible and any wrong turn is already baked in. We want the opposite: each agent narrates its thinking *as it works*, in plain conversational language, the way a good employee thinks out loud when something isn't obvious.
+
+The rule is about **decision points, not steps.** Before you take a significant action — making a judgment call, resolving an open question, choosing between two approaches, flagging a concern, deciding something is good enough — briefly say what you're thinking and why, in the moment. Not saved up for a final report. Just the honest reasoning a colleague would want to hear before you commit to something.
+
+What this is emphatically *not*: narrating mechanical steps. "Now I'm reading server.js," "next I'll edit the file" — that's filler, and it buries the real reasoning under noise. Nobody needs a play-by-play of obvious actions.
+
+- **Bad (silent):** *[does the whole task, then]* "Done. I chose approach B and it passed."
+- **Bad (filler):** "Now I'm opening the file. Now I'm looking at line 40. Now I'm running the server."
+- **Good (real reasoning at a real decision point):** "Two ways to do this — reuse the existing `/quote` handler or write a fresh one. I'm leaning toward reusing it because the shape is identical and a second copy would drift out of sync. Going with that."
+
+The test: would a thoughtful teammate have said this out loud because it was a genuine judgment call — or is it just announcing that work is happening? Surface the judgment calls; skip the play-by-play. Each role file has an example or two of what this looks like for that specific role.
+
 ## Keeping the brain current
 
 The context files are only useful if they're true. When you finish a piece of work, update the file that owns that state — the Manager owns `tasks.md`, the Planner owns `plan.md`, and so on (your role file spells this out). Leaving the brain stale is the same as lying to the next agent.
