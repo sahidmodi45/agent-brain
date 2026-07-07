@@ -24,15 +24,34 @@ _Ready to be picked up, in priority order._
 
 (Nothing to do right now.)
 
+<!--
+Task template — every task carries these fields, and the two verdicts travel with the task down the board:
+- [ ] <one-line title, imperative>.
+      Done when: <observable, checkable result — not an activity>.
+      Depends on: <what must land first, or "no dependencies">.
+      Out of scope: <explicit boundary, if any>.
+      Model: <omit for the Sonnet default; note "Opus — <why>" if it's a genuinely hard task>.
+      QA: <pending → filled in by the QA Tester: PASS, or FAIL with exact repro steps, on YYYY-MM-DD. Answers "does it actually work at runtime".>
+      Review: <pending → filled in by the Reviewer: PASS, or SEND-BACK with file:line, on YYYY-MM-DD. Answers "does it match the plan and follow the rules".>
+
+QA and Review are separate lines on purpose: a task can pass one and fail the other. Both must read PASS before the Manager moves a task to Done.
+-->
+
 ## In progress
 
 _Being worked right now. Should have an owner (the Coder)._
 
-<!-- - [ ] Task description — Coder, started YYYY-MM-DD -->
+(Nothing in progress right now.)
+
+## In QA
+
+_Built, waiting on the QA Tester to prove it actually works at runtime — real runs, unplanned inputs, graceful failure. The task's `QA:` line gets filled in here before it moves on._
+
+(Nothing in QA right now.)
 
 ## In review
 
-_Built, waiting on the Reviewer._
+_Passed QA, waiting on the Reviewer's compliance check against the plan, the definition of done, and the logged decisions. The task's `Review:` line gets filled in here._
 
 (Nothing in review right now.)
 

@@ -1,6 +1,6 @@
 # CLAUDE.md — Agent Brain
 
-This repo is the shared memory for a multi-agent system. Every agent (Planner, Manager, Coder, Reviewer) is a Claude Code session. This file is the first thing you read at the start of any session. Read it fully before doing anything.
+This repo is the shared memory for a multi-agent system. Every agent (Planner, Manager, Coder, QA Tester, Reviewer) is a Claude Code session. This file is the first thing you read at the start of any session. Read it fully before doing anything.
 
 ## What to read, in order
 
@@ -29,15 +29,18 @@ The context files are only useful if they're true. When you finish a piece of wo
 
 ## The handoff chain
 
-Planner → Manager → Coder → Reviewer, with the Manager coordinating throughout. Each role hands off through the context files, not through memory. If it isn't written down, it didn't happen.
+Planner → Manager → Coder → QA Tester → Reviewer → Manager marks Done, with the Manager coordinating throughout. Each role hands off through the context files, not through memory. If it isn't written down, it didn't happen.
+
+**QA Tester and Reviewer check two different things — they are not redundant steps.** The QA Tester asks *"does it actually work?"* — it runs the built thing for real, pushes inputs nobody planned for, and confirms failure modes fail gracefully instead of crashing or silently returning garbage. The Reviewer asks *"does it match what was asked and follow the rules?"* — it judges the work against the task's definition of done, the plan's constraints, and the logged decisions. These are two distinct failure modes: code can work perfectly and still violate the plan (QA passes, review sends back), and code can match the plan exactly on paper and still break the moment you run it (review would pass, QA sends back). Running QA *before* review means the Reviewer is judging something already known to work, so it can focus on compliance rather than re-discovering runtime bugs. The QA Tester also periodically spot-checks the *other agents'* output — a vague plan, an ambiguous task, a rubber-stamped review — because upstream quality problems are cheapest to catch here. Like the Reviewer, the QA Tester can't fix anything; it reports breaks with exact reproduction steps and hands them back to the Coder.
 
 ## How the roles are wired up
 
 Each role exists in two places. The `agents/*.md` files are the plain-English description for humans reading the repo. The real, executable versions live under `.claude/`:
 
-- **Subagents** — `.claude/agents/{planner,manager,coder,reviewer}.md`. These are the actual Claude Code subagents, each with its own model, tool access, and a description that tells Claude when to delegate to it. The tool limits are real guardrails: the Manager can only edit, the Reviewer is read-only (Read/Grep/Glob — it can never modify code), the Coder has Bash, the Planner writes plans. When you're running as a role, you *are* the matching subagent.
+- **Subagents** — `.claude/agents/{planner,manager,coder,qa-tester,reviewer}.md`. These are the actual Claude Code subagents, each with its own model, tool access, and a description that tells Claude when to delegate to it. The tool limits are real guardrails: the Manager can only edit, the Reviewer is read-only (Read/Grep/Glob — it can never modify code), the QA Tester can run and inspect but not change anything (Read/Bash/Grep/Glob — no Write/Edit, so a tester can't patch the thing under test), the Coder has Bash, the Planner writes plans. When you're running as a role, you *are* the matching subagent.
 - **Skills** — `.claude/skills/*/SKILL.md`, each triggered automatically when its situation comes up:
   - `task-breakdown` (Manager) — what makes a task well-formed before it goes to the Coder.
+  - `functional-verification` (QA Tester) — what "actually verified" means: run it for real, try an unplanned input, confirm failure modes fail gracefully.
   - `review-checklist` (Reviewer) — the pass to run before giving any verdict.
   - `security-review` (Reviewer) — a focused security pass to run alongside the review checklist.
   - `commit-standards` (Coder) — what a good commit message looks like in this repo.
