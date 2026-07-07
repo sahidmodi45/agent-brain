@@ -4,7 +4,7 @@ _One place to see what we're building and where it stands. Keep this true — th
 
 ## What this is
 
-Add `status.json` — a machine-readable mirror of the phase currently checked in `context/project.md`. The file contains `{ "phase": "<slug>", "last_updated": "<ISO-8601 UTC timestamp>" }` and stays in sync automatically via a generator script and git pre-commit hook. This enables any tool or human to read the repo's current phase from JSON without parsing markdown, and trust that the file is always up-to-date as of the last commit.
+A tiny local demo, unrelated to the (now-shipped) `status.json` project: a Node HTTP server built with only built-in modules, exposing a single `GET /quote` endpoint that returns a random quote as JSON from a small hardcoded list, plus a plain `index.html` page that fetches `/quote` and displays it, with a button to get another. No external dependencies, no database, no build step.
 
 ## Current phase
 

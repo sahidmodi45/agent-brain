@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quote Demo</title>
+<style>
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #f4f1ea;
+    color: #2b2b2b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+  .card {
+    background: #fff;
+    max-width: 560px;
+    width: 90%;
+    padding: 2.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  #quote-text {
+    font-size: 1.4rem;
+    line-height: 1.5;
+    margin: 0 0 1rem 0;
+  }
+  #quote-text::before { content: '\201C'; }
+  #quote-text::after { content: '\201D'; }
+  #quote-author {
+    font-size: 1rem;
+    color: #666;
+    margin: 0 0 1.5rem 0;
+  }
+  #quote-author::before { content: '\2014 '; }
+  button {
+    font-size: 1rem;
+    padding: 0.6rem 1.4rem;
+    border: none;
+    border-radius: 6px;
+    background: #2b6cb0;
+    color: #fff;
+    cursor: pointer;
+  }
+  button:hover { background: #1f5590; }
+  button:disabled { background: #999; cursor: default; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <p id="quote-text">Loading…</p>
+    <p id="quote-author"></p>
+    <button id="new-quote-btn">New quote</button>
+  </div>
+
+  <script>
+    const textEl = document.getElementById('quote-text');
+    const authorEl = document.getElementById('quote-author');
+    const btnEl = document.getElementById('new-quote-btn');
+
+    async function loadQuote() {
+      btnEl.disabled = true;
+      try {
+        const res = await fetch('/quote');
+        if (!res.ok) {
+          throw new Error('Request failed with status ' + res.status);
+        }
+        const data = await res.json();
+        textEl.textContent = data.text;
+        authorEl.textContent = data.author;
+      } catch (err) {
+        textEl.textContent = 'Could not load a quote.';
+        authorEl.textContent = '';
+      } finally {
+        btnEl.disabled = false;
+      }
+    }
+
+    btnEl.addEventListener('click', loadQuote);
+    loadQuote();
+  </script>
+</body>
+</html>
