@@ -16,6 +16,10 @@ A task is ready for the Coder only when someone else could pick it up and know e
 
 If you can't write a clean definition of done, the gap is in the plan — send it back to the Planner, don't paper over it.
 
+## "Additive-only" is a real boundary — spell it out
+
+When a task should only *add* to an existing file and leave what's there alone, say **"additive-only"** (or "purely additive") in the scope — and know what it commits the Coder to: new lines only, no edits to existing lines, comments and formatting included (the 2026-07-07 decision in `context/decisions.md`). If some existing line genuinely has to change — a header comment goes stale, a constant needs a new value — scope that as its own named change rather than letting it ride along silently under an "additive" task. The Reviewer send-backs any unscoped in-place edit under an additive-only task, so a fuzzy "just add X" that quietly also rewrites existing lines will bounce. Be explicit up front and it won't.
+
 ## Bad
 
 ```

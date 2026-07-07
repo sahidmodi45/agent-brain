@@ -14,10 +14,11 @@ Run every item before you give a verdict. A verdict without the checklist is a g
 3. **Past decisions.** Open `context/decisions.md`. Did the work violate any logged decision — a chosen library, a data shape, a pattern we agreed on? A silent violation is a fail even if the code "works."
 4. **Nothing half-finished.** Look for TODOs, stubbed returns, commented-out branches, error paths that swallow silently. "Works on the happy path" is not done.
 5. **Nothing silently skipped.** Compare what the task asked for against what changed. Did part of the task quietly not get built? Missing scope is a fail, not a footnote.
+6. **Additive-only means additive.** If the task was scoped "additive-only" / "purely additive," any edit to existing lines — comments, formatting, and docs included — is out of scope by default and a **send-back**, unless it was explicitly scoped in. Per the 2026-07-07 decision in `context/decisions.md`, don't weigh in-place edits case by case ("the comment was stale anyway"); flag them. Read the diff, not just the new code — an additive-only change should be purely new lines.
 
 ## Verdict
 
-- **Pass** only if all five clear. Hand it to the Manager for "Done."
+- **Pass** only if all six clear (item 6 applies only to additive-only tasks). Hand it to the Manager for "Done."
 - **Send back** on any miss, with the specific reason and `file:line`. Vague feedback wastes a round trip.
 - If something needs a human (security, scope, risk outside the plan), flag it for NEEDS HUMAN APPROVAL instead of passing.
 
