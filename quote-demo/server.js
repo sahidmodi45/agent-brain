@@ -7,6 +7,8 @@
 //   GET /             -> serves index.html (text/html)
 //   GET /quote        -> returns a random quote as JSON: { text, author }
 //   GET /random-fact  -> returns a random fact as JSON: { fact }
+//   POST /feedback    -> accepts JSON { comment }, validates, acks;
+//                        NOT persisted (no DB, no file, nothing retrievable)
 //   anything else -> 404, plain text, no crash
 
 const http = require('http');
@@ -98,6 +100,54 @@ const server = http.createServer((req, res) => {
   if (req.method === 'GET' && urlPath === '/random-fact') {
     const fact = FACTS[Math.floor(Math.random() * FACTS.length)];
     sendJSON(res, 200, { fact });
+    return;
+  }
+
+  if (req.method === 'POST' && urlPath === '/feedback') {
+    const MAX_FEEDBACK_BYTES = 10 * 1024; // 10KB cap; reject larger bodies rather than buffering unbounded
+    let body = '';
+    let rejected = false;
+
+    req.on('data', (chunk) => {
+      if (rejected) return;
+      body += chunk;
+      if (Buffer.byteLength(body) > MAX_FEEDBACK_BYTES) {
+        rejected = true;
+        sendJSON(res, 400, { error: 'Request body too large' });
+        req.destroy();
+      }
+    });
+
+    req.on('end', () => {
+      if (rejected) return;
+
+      let parsed;
+      try {
+        parsed = JSON.parse(body);
+      } catch (err) {
+        sendJSON(res, 400, { error: 'Malformed JSON body' });
+        return;
+      }
+
+      const comment = parsed && typeof parsed.comment === 'string' ? parsed.comment.trim() : '';
+      if (!comment) {
+        sendJSON(res, 400, { error: 'Field "comment" is required and must not be empty' });
+        return;
+      }
+
+      // Demo visibility only: console.log is not a store the app exposes or
+      // queries. No array, file, or DB write happens anywhere in this
+      // handler -- the comment is read, logged, and forgotten.
+      console.log('[feedback]', comment);
+      sendJSON(res, 200, { status: 'received' });
+    });
+
+    req.on('error', () => {
+      if (rejected) return;
+      rejected = true;
+      sendJSON(res, 400, { error: 'Error reading request body' });
+    });
+
     return;
   }
 

@@ -8,6 +8,8 @@ _Anything blocked on a human goes here, at the top, so it's impossible to miss. 
 
 _Nothing awaiting approval right now._
 
+_(Resolved 2026-07-07: the "let users leave feedback somehow" item that was here was answered by the human — product is `quote-demo`, feedback means a free-text comment box, and persistence is explicitly out — no database, no file, nothing retrievable after the fact. See `context/plan.md` and the 2026-07-07 entry in `context/decisions.md`.)_
+
 <!--
 Template:
 - **[what needs deciding]** — flagged by <role> on YYYY-MM-DD.
@@ -22,7 +24,7 @@ Template:
 
 _Ready to be picked up, in priority order._
 
-(Nothing to do right now.)
+_Nothing to do right now — the feedback task below moved through In progress straight to In QA._
 
 <!--
 Task template — every task carries these fields, and the two verdicts travel with the task down the board:
@@ -58,6 +60,28 @@ _Passed QA, waiting on the Reviewer's compliance check against the plan, the def
 ## Done
 
 _Finished and accepted by the Manager._
+
+- [x] **Implement POST /feedback endpoint and comment box for quote-demo** — built by Coder 2026-07-07, QA PASS 2026-07-07, Review PASS 2026-07-07
+  - **What was built:**
+    - `quote-demo/server.js`: new `POST /feedback` route branch (added after the `/random-fact` branch, before the 404 fallthrough). Reads the body via `req.on('data'/'end')` with a running byte count, cap of 10KB (`MAX_FEEDBACK_BYTES`) enforced by destroying the request and returning 400 the moment the cap is exceeded (no unbounded buffering). On `end`, parses JSON (400 on parse failure), requires `comment` to be a string that's non-empty after `.trim()` (400 otherwise), `console.log`s the trimmed comment for demo visibility only, and responds 200 `{"status":"received"}` via the existing `sendJSON` helper. Added a `req.on('error', ...)` handler for connection-level errors. Header comment (the routes list at the top of the file) updated with one new line documenting `POST /feedback` — the single pre-approved exception to additive-only, matching the `/random-fact` precedent.
+    - `quote-demo/index.html`: new `.feedback-section` block appended inside the existing `.card` div (textarea + submit button + status paragraph), new CSS rules appended inside the existing `<style>` block (no existing selectors touched), and new JS appended inside the existing `<script>` block after `loadQuote()` (a `submitFeedback()` handler wired to the new button's click event — existing `loadQuote`/button code untouched).
+    - Diff confirmed via `git diff --stat`: 142 insertions, 0 deletions across both files.
+  - **Verification performed (all 10 definition-of-done items):**
+    1. `node -c quote-demo/server.js` → passed.
+    2. Started the server; `GET /` → 200, `GET /quote` → 200 valid JSON, `GET /random-fact` → 200 valid JSON, `GET /nonexistent` → 404, `GET /feedback` (wrong method) → 404. Server stayed up through the entire session.
+    3. `POST /feedback` with `{"comment":"This demo is great!"}` → 200 `{"status":"received"}`.
+    4. Missing field (`{}`), empty string (`{"comment":""}`), whitespace-only (`{"comment":"   \t  "}`) → all 400 with a descriptive `error` message.
+    5. Malformed JSON (`{comment: not valid json`) → 400 `{"error":"Malformed JSON body"}`.
+    6. Pushed a real 20,014-byte JSON payload against the 10KB cap → 400 `{"error":"Request body too large"}`; confirmed the server was still responsive immediately after (`GET /quote` → 200).
+    7. **No-persistence, done for real:** submitted a comment with a unique probe string, confirmed no new file appeared in `quote-demo/` as a result. Killed the server process (found its PID via `netstat`, `taskkill /F`), restarted it fresh. Post-restart: directory contains only `index.html` and `server.js` (nothing new), `GET /feedback` returns 404 (no retrieval route exists), the served `GET /` HTML contains zero occurrences of the probe string, and `GET /quote` still works. Confirms no retrieval path and no restart-survival.
+    8. **Frontend — flagged gap, not blocking:** no GUI browser is available in this environment; gap deferred to human (see Accepted note below). Coder drove the exact `fetch('/feedback')` path via real HTTP requests, cross-checked JS logic against server responses, and confirmed behavior. All paths validated.
+    9. Confirmed only `require('http')`, `require('fs')`, `require('path')` in `server.js`; no `package.json` or `node_modules` anywhere in `quote-demo/`.
+    10. `git diff --stat` shows 142 insertions(+), 0 deletions across `server.js` and `index.html`. Only pre-existing touch: header-comment insertion (one new line added within the existing routes list) — the pre-approved exception.
+  - **Cleanup:** server process killed, port 4000 confirmed clear, test artifacts deleted. `git status --short quote-demo/` shows only `server.js` and `index.html` as modified.
+  - QA: PASS (2026-07-07) — ran it at runtime, full validation battery, exact-byte body-cap boundary check, independent no-persistence proof (probe + restart + grep), type-confusion and __proto__ inputs handled, regression on existing routes clean.
+  - Review: PASS (2026-07-07) — all 6 checklist items + security pass. Additive-only verified (142 insertions, 0 deletions; only the pre-approved header-comment line touched). No-persistence and validation confirmed. No security issues.
+  - **Accepted note:** All gates cleared. One open human-only item, not a blocker: **physical browser-click verification of the feedback form.** No safe GUI browser is available in this environment. The button's code path was validated end-to-end via HTTP probing and JS logic inspection at runtime; no code defect. This gap matches the original quote-button gap (logged 2026-07-04), which was closed by human manual verification. Deferred to human: run the server, load `http://localhost:4000/`, type a comment, click "Submit feedback," confirm the acknowledgment appears and textarea clears. No code changes required.
+  - **Intended phase change for context/project.md:** Planning → Shipped (work complete, all gates cleared; human reserves the final ship/commit decision).
 
 - [x] **Add GET /random-fact endpoint to quote-demo/server.js** — built by Coder 2026-07-07, QA PASS 2026-07-07, Review PASS 2026-07-07
   - Added hardcoded `FACTS` array (10 entries) and new `if` branch for `GET /random-fact` handler, reusing existing `sendJSON` helper. Diff is purely additive; no changes to existing routes or structure.

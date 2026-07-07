@@ -47,6 +47,40 @@
   }
   button:hover { background: #1f5590; }
   button:disabled { background: #999; cursor: default; }
+  .feedback-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0ddd3;
+    text-align: left;
+  }
+  .feedback-section label {
+    display: block;
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0.4rem;
+  }
+  #feedback-text {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: vertical;
+    margin-bottom: 0.6rem;
+  }
+  #feedback-submit-btn {
+    font-size: 0.95rem;
+    padding: 0.5rem 1.2rem;
+  }
+  #feedback-status {
+    margin: 0.6rem 0 0 0;
+    font-size: 0.9rem;
+    min-height: 1.2em;
+  }
+  #feedback-status.success { color: #2b6cb0; }
+  #feedback-status.error { color: #c0392b; }
 </style>
 </head>
 <body>
@@ -54,6 +88,13 @@
     <p id="quote-text">Loading…</p>
     <p id="quote-author"></p>
     <button id="new-quote-btn">New quote</button>
+
+    <div class="feedback-section">
+      <label for="feedback-text">Leave feedback</label>
+      <textarea id="feedback-text" rows="3" placeholder="Tell us what you think..."></textarea>
+      <button id="feedback-submit-btn">Submit feedback</button>
+      <p id="feedback-status"></p>
+    </div>
   </div>
 
   <script>
@@ -81,6 +122,57 @@
 
     btnEl.addEventListener('click', loadQuote);
     loadQuote();
+
+    const feedbackText = document.getElementById('feedback-text');
+    const feedbackBtn = document.getElementById('feedback-submit-btn');
+    const feedbackStatus = document.getElementById('feedback-status');
+
+    async function submitFeedback() {
+      const comment = feedbackText.value.trim();
+      feedbackStatus.textContent = '';
+      feedbackStatus.className = '';
+
+      if (!comment) {
+        feedbackStatus.textContent = 'Please enter a comment before submitting.';
+        feedbackStatus.className = 'error';
+        return;
+      }
+
+      feedbackBtn.disabled = true;
+      try {
+        const res = await fetch('/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ comment }),
+        });
+
+        if (!res.ok) {
+          let message = 'Could not submit feedback.';
+          try {
+            const errData = await res.json();
+            if (errData && errData.error) {
+              message = errData.error;
+            }
+          } catch (parseErr) {
+            // Keep the default message if the error body isn't JSON.
+          }
+          feedbackStatus.textContent = message;
+          feedbackStatus.className = 'error';
+          return;
+        }
+
+        feedbackStatus.textContent = 'Thanks for your feedback!';
+        feedbackStatus.className = 'success';
+        feedbackText.value = '';
+      } catch (err) {
+        feedbackStatus.textContent = 'Could not reach the server.';
+        feedbackStatus.className = 'error';
+      } finally {
+        feedbackBtn.disabled = false;
+      }
+    }
+
+    feedbackBtn.addEventListener('click', submitFeedback);
   </script>
 </body>
 </html>

@@ -38,6 +38,13 @@ Copy this block to the bottom for each new decision:
 - **Decision:** Close the gap with the shipping commit rather than a throwaway test commit. The phase was advanced In review → Shipped in `context/project.md`, and the commit that ships the feature exercises the hook end-to-end — the hook regenerates `status.json` to `shipped` and stages it into that same commit, satisfying plan.md §5 item 3 as a live test rather than an isolated one.
 - **Impact:** Feature is accepted and shipped. The three tasks are in Done; the board phase is Shipped. Future phase changes to `context/project.md` will keep `status.json` current automatically on each commit via the now-verified hook.
 
+### 2026-07-07 — Feedback comment box: keep quote-demo's "no persistence" constraint intact
+
+- **Made by:** Human
+- **Context:** A new, deliberately under-specified goal arrived — "let users leave feedback somehow" — with no product, feedback type, or persistence answer attached. Per the lessons-learned entry logged the same day, the Planner treated this as a foundational ambiguity (not a low-stakes default) and paused to ask the human three questions rather than guessing, since one of the live readings (adding feedback to `quote-demo`) would require narrowing that project's standing "no database, no persistence" constraint.
+- **Decision:** The feature is scoped to `quote-demo`, feedback means a simple free-text comment box (not reactions, ratings, or a routed report form), and — critically — persistence is **not** added. The human explicitly declined to relax the existing no-DB/no-file constraint. The server may accept a feedback submission and acknowledge it, and may console-log the received text for demo visibility, but nothing is written to disk or a database, and nothing submitted is retrievable after the fact or across a restart.
+- **Impact:** Confirms and extends the original quote-demo constraint ("no external dependencies, no database, no persistence," first established 2026-07-04) to explicitly cover this new feature too, closing off the option the Planner flagged as a live possibility. Any future quote-demo feature that seems to need real persistence should go back to the human for a decision rather than being assumed in. See `context/plan.md` for the resulting task scope.
+
 ### 2026-07-07 — "Additive-only" means no edits to existing lines, comments included
 
 - **Made by:** Human
